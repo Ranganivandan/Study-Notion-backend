@@ -1,29 +1,31 @@
 const nodemailer = require("nodemailer");
 
 const mailSender = async (email, title, body) => {
-    try{
-            let transporter = nodemailer.createTransport({
-                host:process.env.MAIL_HOST,
-                auth:{
-                    user: process.env.MAIL_USER,
-                    pass: process.env.MAIL_PASS,
-                }
-            })
-
-
-            let info = await transporter.sendMail({
-                from: 'StudyNotion || CodeHelp - by Babbar',
-                to:`${email}`,
-                subject: `${title}`,
-                html: `${body}`,
-            })
-            console.log(info);
-            return info;
+  try {
+    let transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: 587, // Ensure the correct port is specified
+      secure: false, // Use true for 465, false for other ports
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    let info = await transporter.sendMail({
+      from: "StudyNotion || CodeHelp - by Babbar",
+      to: `${email}`,
+      subject: `${title}`,
+      html: `${body}`,
+    });
+    if (!info) {
+      throw new Error("Failed to send email, info is null or undefined");
     }
-    catch(error) {
-        console.log(error.message);
-    }
-}
-
+    console.log(info);
+    return info;
+  } catch (error) {
+    console.log("Error occurred while sending email:", error.message);
+    return null; // Return null or handle the error as needed
+  }
+};
 
 module.exports = mailSender;
